@@ -7,7 +7,7 @@ import (
 	"gonum.org/v1/plot/vg"
 )
 
-func PlotHistogram(data []StravaListActivitiesResponse) {
+func PlotTrend(data []StravaListActivitiesResponse) {
 	p := plot.New()
 	p.Title.Text = "histogram plot"
 	pts := make(plotter.XYs, len(data))

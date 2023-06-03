@@ -16,7 +16,7 @@ type StravaPageData struct {
 }
 
 func main() {
-	accessKeys, err := strava.ParseConfig("configs/accessKeys.json")
+	accessKeys, err := strava.ParseConfig("configs/realAccessKeys.json")
 	if err != nil {
 		panic(err)
 	}
@@ -31,7 +31,7 @@ func main() {
 	// fmt.Print(activitiesList[3])
 	totalKm, totalSession := strava.Cal30DaysStats(activitiesList)
 
-	strava.PlotHistogram(activitiesList)
+	strava.PlotTrend(activitiesList)
 
 	tmpl := template.Must(template.ParseFiles("web/html/layout.html"))
 	http.Handle("/web/", http.StripPrefix("/web/", http.FileServer(http.Dir("web"))))
