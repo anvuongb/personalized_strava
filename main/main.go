@@ -1,8 +1,10 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"html/template"
+	"io/ioutil"
 	"net/http"
 	"stravapersonal/strava"
 )
@@ -17,13 +19,21 @@ type StravaPageData struct {
 
 func main() {
 	accessKeys, err := strava.ParseConfig("configs/realAccessKeys.json")
+
 	if err != nil {
 		panic(err)
 	}
-	token, err := strava.GetNewTokenFromRefreshToken(accessKeys.CurrentRefreshToken, accessKeys.ClientId, accessKeys.ClientSecret)
+	resp, err := strava.GetNewTokenFromRefreshToken(accessKeys.CurrentRefreshToken, accessKeys.ClientId, accessKeys.ClientSecret)
 	if err != nil {
 		fmt.Print(err)
 	}
+	token := resp.AccessToken
+
+	// update token file
+	accessKeys.CurrentAccessToken = token
+	accessKeys.CurrentRefreshToken = resp.RefreshToken
+	file, _ := json.MarshalIndent(accessKeys, "", " ")
+	_ = ioutil.WriteFile("configs/realAccessKeys.json", file, 0644)
 	activitiesList, err := strava.GetActivitiesList(token)
 	if err != nil {
 		fmt.Print(err)

@@ -33,7 +33,7 @@ func ParseConfig(configPath string) (ConfigToken, error) {
 	return config, nil
 }
 
-func GetNewTokenFromRefreshToken(refreshToken string, clientId string, clientSecret string) (string, error) {
+func GetNewTokenFromRefreshToken(refreshToken string, clientId string, clientSecret string) (StravaRefreshToAccessTokenEndpointResponse, error) {
 	// JSON body
 	body := []byte(fmt.Sprintf(
 		StravaRefreshToAccessTokenEndpointBody,
@@ -43,16 +43,16 @@ func GetNewTokenFromRefreshToken(refreshToken string, clientId string, clientSec
 	))
 	resp, err := http.Post(StravaRefreshToAccessTokenEndpoint, "application/json", bytes.NewBuffer(body))
 	if err != nil {
-		return "", err
+		return StravaRefreshToAccessTokenEndpointResponse{}, err
 	}
 	defer resp.Body.Close()
 	parse := &StravaRefreshToAccessTokenEndpointResponse{}
 	err = json.NewDecoder(resp.Body).Decode(parse)
 	if err != nil {
-		return "", err
+		return StravaRefreshToAccessTokenEndpointResponse{}, err
 	}
 
-	return parse.AccessToken, nil
+	return *parse, nil
 }
 
 func GetActivitiesList(accessToken string) ([]StravaListActivitiesResponse, error) {
