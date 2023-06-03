@@ -1,0 +1,61 @@
+
+<style>
+    table, th, td {
+      border:1px solid black;
+    }
+    th, td {
+        padding: 15px;
+        text-align: center;
+    }
+
+    tr:nth-child(even) {background-color: #f2f2f2;}
+
+    tr:hover {background-color: grey;}
+    
+    .center {
+        margin: auto;
+        width: 95%;
+        padding: 10px;
+      }
+</style>
+
+<div class="center"><h1>{{.PageTitle}}</h1></div>
+
+<div class="center"><p>
+    <b>Total distance (km):   </b>{{.TotalKmFormatted}}
+    <br>
+    <b>Total sessions:   </b>{{.TotalSession}}
+</p>
+</div>
+
+<div class="center">
+    <img src="/web/images/plotXY.png" alt="Running distance trend">
+</div>
+
+
+<div class="center" style="overflow-x:auto;">
+    <table>
+        <tr>
+            <td><b>Date</b></td>
+            <td><b>Time</b></td>
+            <td><b>Distance (km)</b></td>
+            <td><b>Elapsed time</b></td>
+            <td><b>Pace</b></td>
+            <td><b>Average Heart rate</b></td>
+            <td><b>Max Heart rate</b></td>
+            <td><b>Effort score</b></td>
+        </tr>
+        {{range .ActivitiesList}}
+        <tr>
+            <td>{{.DateFormatted}}</td>
+            <td>{{.HoursFormatted}}</td>
+            <td>{{.DistanceKmStr}}</td>
+            <td>{{.ElapsedTimeReHours}}h{{.ElapsedTimeReMins}}m{{.ElapsedTimeReSecs}}s</td>
+            <td>{{.PaceReMins}}m{{.PaceReSecs}}s</td>
+            <td>{{.AverageHeartrate}}</td>
+            <td>{{.MaxHeartrate}}</td>
+            <td>{{.SufferScore}}</td>
+        </tr>
+        {{end}}
+    </table>
+</div>
