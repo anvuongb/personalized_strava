@@ -45,7 +45,7 @@ func main() {
 
 	tmpl := template.Must(template.ParseFiles("web/html/layout.html"))
 	http.Handle("/web/", http.StripPrefix("/web/", http.FileServer(http.Dir("web"))))
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/strava", func(w http.ResponseWriter, r *http.Request) {
 		data := StravaPageData{
 			PageTitle:        "My last 30 days Strava",
 			AccessToken:      token,
