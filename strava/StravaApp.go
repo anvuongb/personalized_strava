@@ -8,6 +8,8 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"text/template"
+	"time"
 )
 
 type ConfigToken struct {
@@ -15,6 +17,15 @@ type ConfigToken struct {
 	CurrentAccessToken  string `json:"currentAccesToken"`
 	ClientId            string `json:"clientId"`
 	ClientSecret        string `json:"clientSecret"`
+}
+
+type StravaPageData struct {
+	PageTitle        string
+	AccessToken      string
+	LastUpdated      string
+	ActivitiesList   []StravaListActivitiesResponse
+	TotalKmFormatted string
+	TotalSession     int
 }
 
 func ParseConfig(configPath string) (ConfigToken, error) {
@@ -105,4 +116,55 @@ func Cal30DaysStats(data []StravaListActivitiesResponse) (float32, int) {
 		totalKm += v.DistanceKm
 	}
 	return totalKm, totalSession
+}
+
+func GenerateStaticHTML() {
+	accessKeys, err := ParseConfig("configs/realAccessKeys.json")
+
+	if err != nil {
+		panic(err)
+	}
+	resp, err := GetNewTokenFromRefreshToken(accessKeys.CurrentRefreshToken, accessKeys.ClientId, accessKeys.ClientSecret)
+	if err != nil {
+		fmt.Print(err)
+	}
+	token := resp.AccessToken
+
+	// update token file
+	accessKeys.CurrentAccessToken = token
+	accessKeys.CurrentRefreshToken = resp.RefreshToken
+	file, _ := json.MarshalIndent(accessKeys, "", " ")
+	_ = ioutil.WriteFile("configs/realAccessKeys.json", file, 0644)
+	activitiesList, err := GetActivitiesList(token)
+	if err != nil {
+		fmt.Print(err)
+	}
+	// fmt.Print(activitiesList[3])
+	totalKm, totalSession := Cal30DaysStats(activitiesList)
+
+	PlotTrend(activitiesList)
+
+	// gen data
+	data := StravaPageData{
+		PageTitle:        "My last 30 days Strava",
+		AccessToken:      token,
+		LastUpdated:      time.Now().Format("January 02, 2006 15:04:05"),
+		ActivitiesList:   activitiesList,
+		TotalKmFormatted: fmt.Sprintf("%.2f", totalKm),
+		TotalSession:     totalSession,
+	}
+
+	// generate template
+	f, _ := os.Create("web/html/index.html")
+	t := template.Must(template.ParseFiles("web/html/layout.html"))
+	t.Execute(f, data)
+	f.Close()
+}
+
+func DoGenerateStaticHTML() {
+	// each 10 minutes
+	for range time.Tick(time.Second * 10 * 60) {
+		// do the interval task
+		GenerateStaticHTML()
+	}
 }
