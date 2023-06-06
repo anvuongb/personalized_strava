@@ -44,7 +44,7 @@ func main() {
 	strava.PlotTrend(activitiesList)
 
 	tmpl := template.Must(template.ParseFiles("web/html/layout.html"))
-	http.Handle("/web/", http.StripPrefix("/web/", http.FileServer(http.Dir("web"))))
+	http.Handle("/strava/web/", http.StripPrefix("/strava/web/", http.FileServer(http.Dir("web"))))
 	http.HandleFunc("/strava", func(w http.ResponseWriter, r *http.Request) {
 		data := StravaPageData{
 			PageTitle:        "My last 30 days Strava",
