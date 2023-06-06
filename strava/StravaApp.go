@@ -71,7 +71,6 @@ func GetActivitiesList(accessToken string) ([]StravaListActivitiesResponse, erro
 	now := time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, t.Nanosecond(), t.Location())
 	before := now.AddDate(0, 0, -30)
 	endpoint := fmt.Sprintf(StravaListActivitiesEndpoint, before.Unix())
-	fmt.Print(endpoint)
 	req, _ := http.NewRequest("GET",
 		endpoint,
 		nil)
@@ -99,7 +98,7 @@ func GetActivitiesList(accessToken string) ([]StravaListActivitiesResponse, erro
 	for k, v := range parse {
 		// fmt.Print(v)
 		parse[k].StartDateFormatted = v.StartDateLocal.Format("Mon, 02 Jan 2006 15:04:05")
-		parse[k].DistanceKm = v.Distance / 1000
+		parse[k].DistanceKm = v.Distance / 1000.0
 		parse[k].DistanceKmStr = fmt.Sprintf("%.2f", parse[k].DistanceKm)
 
 		parse[k].Pace = float32(v.ElapsedTime) / parse[k].DistanceKm
