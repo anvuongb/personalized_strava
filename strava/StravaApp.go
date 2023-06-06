@@ -67,7 +67,14 @@ func GetNewTokenFromRefreshToken(refreshToken string, clientId string, clientSec
 }
 
 func GetActivitiesList(accessToken string) ([]StravaListActivitiesResponse, error) {
-	req, _ := http.NewRequest("GET", StravaListActivitiesEndpoint, nil)
+	t := time.Now()
+	now := time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, t.Nanosecond(), t.Location())
+	before := now.AddDate(0, 0, -30)
+	endpoint := fmt.Sprintf(StravaListActivitiesEndpoint, before.Unix())
+	fmt.Print(endpoint)
+	req, _ := http.NewRequest("GET",
+		endpoint,
+		nil)
 	bearer := "Bearer " + accessToken
 	req.Header.Add("Authorization", bearer)
 
@@ -85,6 +92,9 @@ func GetActivitiesList(accessToken string) ([]StravaListActivitiesResponse, erro
 	err = json.Unmarshal(body, &parse)
 	if err != nil {
 		return nil, err
+	}
+	for i, j := 0, len(parse)-1; i < j; i, j = i+1, j-1 {
+		parse[i], parse[j] = parse[j], parse[i]
 	}
 	for k, v := range parse {
 		// fmt.Print(v)

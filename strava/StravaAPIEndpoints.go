@@ -3,7 +3,7 @@ package strava
 import "time"
 
 const StravaRefreshToAccessTokenEndpoint string = "https://www.strava.com/oauth/token"
-const StravaListActivitiesEndpoint string = "https://www.strava.com/api/v3/athlete/activities?page=1&per_page=30"
+const StravaListActivitiesEndpoint string = "https://www.strava.com/api/v3/athlete/activities?after=%d"
 
 var StravaRefreshToAccessTokenEndpointBody string = `{
 	"client_id": "%s",

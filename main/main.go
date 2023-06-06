@@ -8,6 +8,8 @@ import (
 
 func main() {
 
+	strava.GenerateStaticHTML()
+
 	go strava.DoGenerateStaticHTML()
 
 	// tmpl := template.Must(template.ParseFiles("web/html/layout.html"))
